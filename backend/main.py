@@ -4,11 +4,15 @@ from agent import agent
 
 app = FastAPI()
 
-class LearningRequest(BaseModel):
+class GoalRequest(BaseModel):
     goal: str
 
+@app.get("/")
+def home():
+    return {"message": "Learning Path Agent API Running"}
+
 @app.post("/generate-learning-path")
-def generate_learning_path(data: LearningRequest):
+def generate_learning_path(request: GoalRequest):
 
     result = agent.invoke(
         {
@@ -16,13 +20,13 @@ def generate_learning_path(data: LearningRequest):
                 {
                     "role": "user",
                     "content": f"""
-                    Create a learning path for {data.goal}
+                    I want to become a {request.goal}.
 
-                    Include:
-                    1. Roadmap
-                    2. Resources
-                    3. Projects
-                    4. Daily Study Plan
+                    Generate:
+                    - Learning Roadmap
+                    - Resources
+                    - Projects
+                    - Daily Study Plan
                     """
                 }
             ]
@@ -30,6 +34,6 @@ def generate_learning_path(data: LearningRequest):
     )
 
     return {
-        "goal": data.goal,
-        "response": result["messages"][-1].content
+        "goal": request.goal,
+        "learning_path": result["messages"][-1].content
     }

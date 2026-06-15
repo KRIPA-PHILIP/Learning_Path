@@ -20,7 +20,3 @@ result = agent.invoke(
 )
 
 print(result["messages"][-1].content)
-print("ROADMAP TOOL CALLED")
-print("RESOURCES TOOL CALLED")
-print("PROJECTS TOOL CALLED")
-print("PLANNER TOOL CALLED")
