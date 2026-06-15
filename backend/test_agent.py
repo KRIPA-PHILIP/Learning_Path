@@ -6,13 +6,7 @@ result = agent.invoke(
             {
                 "role": "user",
                 "content": """
-                I want to become a FastAPI developer.
-
-                Give me:
-                1. Learning Roadmap
-                2. Learning Resources
-                3. Practice Projects
-                4. Daily Study Plan
+                Generate a complete learning path for becoming a FastAPI Developer.
                 """
             }
         ]

@@ -20,15 +20,25 @@ def generate_learning_path(goal: str):
     )
 
     resources = recommend_resources.invoke(
-        {"goal": goal}
+        {
+            "goal": goal,
+            "roadmap": roadmap
+        }
     )
 
     projects = suggest_projects.invoke(
-        {"goal": goal}
+        {
+            "goal": goal,
+            "roadmap": roadmap
+        }
     )
 
     planner = create_daily_plan.invoke(
-        {"goal": goal}
+        {
+            "goal": goal,
+            "roadmap": roadmap,
+            "projects": projects
+        }
     )
 
     return f"""
