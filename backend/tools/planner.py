@@ -3,65 +3,42 @@ from llm import llm
 
 
 @tool
-def create_daily_plan(
-    goal: str,
-    roadmap: str,
-    projects: str
-) -> str:
+def create_daily_plan(goal: str, roadmap: str, projects: str) -> str:
     """
-    Create a study plan based on roadmap and projects.
+    Generate a concise 7-day study plan.
     """
 
     print("PLANNER TOOL CALLED")
 
     prompt = f"""
-    You are an expert study planner and career coach.
+You are an expert study planner.
 
-    Goal:
-    {goal}
+Career Goal:
 
-    Learning Roadmap:
-    {roadmap}
+{goal}
 
-    Recommended Projects:
-    {projects}
+Roadmap:
 
-    Create a practical study plan based on the roadmap and projects.
+{roadmap}
 
-    Assume:
-    - 2 hours per day
-    - 6 days per week
+Projects:
 
-    Return the response in the following format:
+{projects}
 
-    # Daily Schedule
-    - Daily learning activities
-    - Recommended study hours
+Create a concise 7-day study plan.
 
-    # Weekly Milestones
-    Week 1:
-    Week 2:
-    Week 3:
-    ...
+Each day should contain:
 
-    # Revision Plan
-    - When to revise
-    - How to track progress
+- Topics
+- Practice Task
+- Study Time
 
-    # Project Schedule
-    - When to start beginner projects
-    - When to start intermediate projects
-    - When to start advanced projects
+Rules:
 
-    # Monthly Checkpoints
-    - Skills to verify
-    - Portfolio progress review
-
-    # Completion Criteria
-    Explain how the learner can determine they are job-ready.
-
-    Make the schedule realistic, practical, and aligned with the roadmap and projects.
-    """
+- Maximum 3 bullet points per day.
+- Keep responses concise.
+- Use Markdown.
+"""
 
     response = llm.invoke(prompt)
 

@@ -10,51 +10,69 @@ from tools.planner import create_daily_plan
 def generate_learning_path(goal: str):
     """
     Generate a complete learning path including roadmap,
-    resources, projects and study plan.
+    resources, projects, and study plan.
     """
 
     print("LEARNING PATH TOOL CALLED")
 
-    roadmap = generate_roadmap.invoke(
-        {"goal": goal}
-    )
+    try:
+        # Step 1: Generate Roadmap
+        roadmap = generate_roadmap.invoke(
+            {"goal": goal}
+        )
+        print("ROADMAP GENERATED")
 
-    resources = recommend_resources.invoke(
-        {
-            "goal": goal,
-            "roadmap": roadmap
-        }
-    )
+        # Step 2: Generate Resources using Roadmap
+        resources = recommend_resources.invoke(
+            {
+                "goal": goal,
+                "roadmap": roadmap
+            }
+        )
+        print("RESOURCES GENERATED")
 
-    projects = suggest_projects.invoke(
-        {
-            "goal": goal,
-            "roadmap": roadmap
-        }
-    )
+        # Step 3: Generate Projects using Roadmap
+        projects = suggest_projects.invoke(
+            {
+                "goal": goal,
+                "roadmap": roadmap
+            }
+        )
+        print("PROJECTS GENERATED")
 
-    planner = create_daily_plan.invoke(
-        {
-            "goal": goal,
-            "roadmap": roadmap,
-            "projects": projects
-        }
-    )
+        # Step 4: Generate Study Plan using Roadmap + Projects
+        planner = create_daily_plan.invoke(
+            {
+                "goal": goal,
+                "roadmap": roadmap,
+                "projects": projects
+            }
+        )
+        print("PLANNER GENERATED")
 
-    return f"""
-# ROADMAP
+        return f"""
+# Learning Path for {goal}
+
+## Learning Roadmap
 
 {roadmap}
 
-# RESOURCES
+## Learning Resources
 
 {resources}
 
-# PROJECTS
+## Practice Projects
 
 {projects}
 
-# DAILY PLAN
+## Study Plan
 
 {planner}
+
+## Final Recommendation
+
+Follow the roadmap sequentially and complete projects alongside each learning phase. Focus on consistent practice, regular revision, and portfolio development to maximize learning outcomes.
 """
+
+    except Exception as e:
+        return f"Error generating learning path: {str(e)}"

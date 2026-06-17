@@ -6,5 +6,6 @@ load_dotenv()
 
 llm = ChatOllama(
     model=os.getenv("OLLAMA_MODEL"),
-    base_url=os.getenv("OLLAMA_BASE_URL")
+    base_url=os.getenv("OLLAMA_BASE_URL"),
+    temperature=0.2,
 )

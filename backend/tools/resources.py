@@ -1,11 +1,9 @@
 from langchain_core.tools import tool
 from llm import llm
 
+
 @tool
-def recommend_resources(
-    goal: str,
-    roadmap: str
-) -> str:
+def recommend_resources(goal: str, roadmap: str) -> str:
     """
     Recommend learning resources based on the roadmap.
     """
@@ -13,41 +11,36 @@ def recommend_resources(
     print("RESOURCES TOOL CALLED")
 
     prompt = f"""
-    Goal:
-    {goal}
+You are an expert technical mentor.
 
-    Roadmap:
-    {roadmap}
+Career Goal:
 
-    Recommend resources specifically for the roadmap above.
+{goal}
 
-    Return the response in the following format:
+Learning Roadmap:
 
-    # Beginner Resources
-    - Official Documentation
-    - Free Courses
-    - YouTube Channels
-    - Practice Platforms
+{roadmap}
 
-    # Intermediate Resources
-    - Official Documentation
-    - Free Courses
-    - YouTube Channels
-    - Practice Platforms
+Recommend ONLY:
 
-    # Advanced Resources
-    - Official Documentation
-    - Paid Courses
-    - Books
-    - Practice Platforms
+## Documentation
+- 3 official documentation websites
 
-    For every resource include:
-    - Resource Name
-    - Why it is useful
-    - Recommended phase to use it
+## YouTube
+- 3 YouTube channels
 
-    Prioritize industry-recognized and up-to-date resources.
-    """
+## Courses
+- 2 online courses
+
+## Books
+- 2 recommended books
+
+Rules:
+
+- One line description only.
+- Avoid long explanations.
+- Return in Markdown.
+"""
 
     response = llm.invoke(prompt)
 

@@ -3,68 +3,46 @@ from llm import llm
 
 
 @tool
-def suggest_projects(
-    goal: str,
-    roadmap: str
-) -> str:
+def suggest_projects(goal: str, roadmap: str) -> str:
     """
-    Suggest projects based on the learning roadmap.
+    Suggest projects aligned with the learning roadmap.
     """
 
     print("PROJECTS TOOL CALLED")
 
     prompt = f"""
-    You are a senior technical mentor.
+You are a software mentor.
 
-    Goal:
-    {goal}
+Career Goal:
 
-    Learning Roadmap:
-    {roadmap}
+{goal}
 
-    Suggest projects that directly align with the skills,
-    technologies, and milestones mentioned in the roadmap.
+Roadmap:
 
-    Return the response in the following format:
+{roadmap}
 
-    # Beginner Projects
+Suggest:
 
-    For each project provide:
-    - Project Name
-    - Objective
-    - Skills Learned
-    - Technologies Used
-    - Difficulty
-    - Estimated Duration
+## Beginner
+2 projects
 
-    # Intermediate Projects
+## Intermediate
+2 projects
 
-    For each project provide:
-    - Project Name
-    - Objective
-    - Skills Learned
-    - Technologies Used
-    - Difficulty
-    - Estimated Duration
+## Advanced
+1 project
 
-    # Advanced Projects
+For each project provide:
 
-    For each project provide:
-    - Project Name
-    - Objective
-    - Skills Learned
-    - Technologies Used
-    - Difficulty
-    - Estimated Duration
+- Name
+- Objective
+- Skills Learned
 
-    # Resume Impact
+Rules:
 
-    Explain how these projects help build a strong portfolio
-    and improve employability for this career path.
-
-    Ensure the projects become progressively more challenging
-    and follow the roadmap learning sequence.
-    """
+- Maximum 3 lines per project.
+- Use Markdown.
+"""
 
     response = llm.invoke(prompt)
 

@@ -1,28 +1,35 @@
 from langchain_core.tools import tool
 from llm import llm
 
+
 @tool
 def generate_roadmap(goal: str) -> str:
     """
-    Generate a detailed learning roadmap for a career goal.
+    Generate a concise learning roadmap for a career goal.
     """
 
     print("ROADMAP TOOL CALLED")
 
     prompt = f"""
-    Create a comprehensive roadmap for becoming a {goal}.
+You are an expert career mentor.
 
-    Include:
-    - Prerequisites
-    - Beginner Phase
-    - Intermediate Phase
-    - Advanced Phase
-    - Weekly Milestones
-    - Recommended Learning Order
-    - Estimated Timeline
+Create a concise learning roadmap for becoming a {goal}.
 
-    Format the response clearly using headings and bullet points.
-    """
+Include ONLY:
+
+1. Prerequisites
+2. Beginner Phase
+3. Intermediate Phase
+4. Advanced Phase
+5. Estimated Timeline
+
+Rules:
+
+- Maximum 5 bullet points per section.
+- Keep explanations short.
+- Use Markdown headings.
+- Do not add unnecessary details.
+"""
 
     response = llm.invoke(prompt)
 
