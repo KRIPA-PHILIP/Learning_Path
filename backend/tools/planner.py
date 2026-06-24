@@ -1,11 +1,9 @@
-from langchain_core.tools import tool
 from llm import llm
 
 
-@tool
 def create_daily_plan(goal: str, roadmap: str, projects: str) -> str:
     """
-    Generate a concise 7-day study plan.
+    Create a study planner based on roadmap and projects.
     """
 
     print("PLANNER TOOL CALLED")
@@ -25,18 +23,19 @@ Projects:
 
 {projects}
 
-Create a concise 7-day study plan.
+Create:
 
-Each day should contain:
+## Weekly Plan
 
-- Topics
-- Practice Task
-- Study Time
+## Daily Schedule
+
+## Revision Strategy
+
+## Practice Tips
 
 Rules:
 
-- Maximum 3 bullet points per day.
-- Keep responses concise.
+- Keep it concise.
 - Use Markdown.
 """
 

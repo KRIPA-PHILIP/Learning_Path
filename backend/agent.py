@@ -3,13 +3,24 @@ import os
 
 from deepagents import create_deep_agent
 
-from learning_path import generate_learning_path
-
 load_dotenv()
+
+SYSTEM_PROMPT = """
+You are an expert AI Career Mentor.
+
+You help users with:
+
+- Career guidance
+- Resume reviews
+- Interview preparation
+- Learning recommendations
+- Technology selection
+- Project ideas
+
+Always provide concise and structured responses.
+"""
 
 agent = create_deep_agent(
     model=f"ollama:{os.getenv('OLLAMA_MODEL')}",
-    tools=[
-        generate_learning_path
-    ],
+    system_prompt=SYSTEM_PROMPT,
 )

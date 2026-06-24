@@ -1,8 +1,6 @@
-from langchain_core.tools import tool
 from llm import llm
 
 
-@tool
 def recommend_resources(goal: str, roadmap: str) -> str:
     """
     Recommend learning resources based on the roadmap.

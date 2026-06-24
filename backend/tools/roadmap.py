@@ -1,8 +1,6 @@
-from langchain_core.tools import tool
 from llm import llm
 
 
-@tool
 def generate_roadmap(goal: str) -> str:
     """
     Generate a concise learning roadmap for a career goal.

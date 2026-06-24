@@ -1,47 +1,40 @@
-from langchain_core.tools import tool
 from llm import llm
 
 
-@tool
 def suggest_projects(goal: str, roadmap: str) -> str:
     """
-    Suggest projects aligned with the learning roadmap.
+    Suggest portfolio projects based on the roadmap.
     """
 
     print("PROJECTS TOOL CALLED")
 
     prompt = f"""
-You are a software mentor.
+You are an expert software mentor.
 
 Career Goal:
 
 {goal}
 
-Roadmap:
+Learning Roadmap:
 
 {roadmap}
 
 Suggest:
 
-## Beginner
-2 projects
+## Beginner Projects
+- 3 Projects
 
-## Intermediate
-2 projects
+## Intermediate Projects
+- 3 Projects
 
-## Advanced
-1 project
-
-For each project provide:
-
-- Name
-- Objective
-- Skills Learned
+## Advanced Projects
+- 2 Projects
 
 Rules:
 
-- Maximum 3 lines per project.
-- Use Markdown.
+- Mention technologies.
+- One line explanation.
+- Return Markdown.
 """
 
     response = llm.invoke(prompt)

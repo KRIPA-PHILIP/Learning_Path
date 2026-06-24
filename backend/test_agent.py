@@ -5,9 +5,7 @@ result = agent.invoke(
         "messages": [
             {
                 "role": "user",
-                "content": """
-                Generate a complete learning path for becoming a FastAPI Developer.
-                """
+                "content": "How do I become a Backend Developer?"
             }
         ]
     }
