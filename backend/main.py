@@ -1,10 +1,20 @@
+from fastapi import UploadFile, File
+import shutil
+import os
+import uuid
+
+from tools.resume_analysis import analyze_resume
+from tools.career_recommendation import recommend_careers
+from session_memory import memory
+from tools.skill_gap import generate_skill_gap
+from tools.resume_validator import validate_resume
+from resume.extractor import extract_resume_text
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from graph import graph
 from agent import agent
-from session_memory import memory
 
 
 app = FastAPI(title="Learning Path Agent API")
@@ -39,6 +49,9 @@ class ChatRequest(BaseModel):
     session_id: str
     message: str
 
+class CareerSelectionRequest(BaseModel):
+    session_id: str
+    career: str
 
 # ==========================================================
 # Home
@@ -235,4 +248,166 @@ Instructions:
 
         return {
             "error": str(e)
+        }
+@app.post("/upload-resume")
+async def upload_resume(file: UploadFile = File(...), session_id: str = None):
+
+    try:
+
+        # --------------------------------------------------
+        # Create Upload Folder
+        # --------------------------------------------------
+
+        os.makedirs("uploads", exist_ok=True)
+
+        file_path = os.path.join("uploads", file.filename or "resume.pdf")
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # --------------------------------------------------
+        # Extract Resume Text
+        # --------------------------------------------------
+
+        resume_text = extract_resume_text(file_path)
+
+        # --------------------------------------------------
+        # Validate Resume
+        # --------------------------------------------------
+
+        validation = validate_resume(resume_text)
+
+        if not validation.get("is_resume", False):
+            return {
+                "success": False,
+                "is_resume": False,
+                "message": validation.get("reason", "Uploaded document is not a resume."),
+            }
+
+        # --------------------------------------------------
+        # Analyze Resume and Save Profile
+        # --------------------------------------------------
+
+        profile = analyze_resume(resume_text)
+
+        if session_id:
+            memory.save_resume(session_id, resume_text)
+            memory.save_candidate_profile(session_id, profile)
+
+        return {
+            "success": True,
+            "is_resume": True,
+            "message": "Resume uploaded and analyzed successfully.",
+            "profile": profile,
+        }
+
+    except Exception as e:
+
+        print("ERROR:", e)
+
+        return {
+            "error": str(e)
+        }
+
+
+@app.post("/select-career")
+def select_career(request: CareerSelectionRequest):
+
+    try:
+
+        # --------------------------------------------------
+        # Save Selected Career
+        # --------------------------------------------------
+
+        memory.save_selected_career(
+            request.session_id,
+            request.career
+        )
+
+        # --------------------------------------------------
+        # Retrieve Candidate Profile
+        # --------------------------------------------------
+
+        profile = memory.get_candidate_profile(
+            request.session_id
+        )
+
+        # --------------------------------------------------
+        # Retrieve Recommended Careers
+        # --------------------------------------------------
+
+        careers = memory.get_recommended_careers(
+            request.session_id
+        )
+
+        # --------------------------------------------------
+        # Find the Selected Career
+        # --------------------------------------------------
+
+        selected_career = None
+
+        for career in careers["recommended_careers"]:
+
+            if career["title"] == request.career:
+
+                selected_career = career
+
+                break
+
+        if selected_career is None:
+
+            return {
+                "error": "Selected career not found."
+            }
+
+        # --------------------------------------------------
+        # Generate Skill Gap
+        # --------------------------------------------------
+
+        skill_gap = generate_skill_gap(
+
+            profile["skills"],
+
+            selected_career["required_skills"]
+
+        )
+
+        # --------------------------------------------------
+        # Save Skill Gap
+        # --------------------------------------------------
+
+        memory.save_skill_gap(
+
+            request.session_id,
+
+            skill_gap
+
+        )
+
+        # --------------------------------------------------
+        # Response
+        # --------------------------------------------------
+
+        return {
+
+            "message": "Career selected successfully.",
+
+            "selected_career": request.career,
+
+            "match_percentage": skill_gap["match_percentage"],
+
+            "matched_skills": skill_gap["matched_skills"],
+
+            "missing_skills": skill_gap["missing_skills"]
+
+        }
+
+    except Exception as e:
+
+        print("ERROR :", e)
+
+        return {
+
+            "error": str(e)
+
         }
