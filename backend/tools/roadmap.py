@@ -1,32 +1,59 @@
 from llm import llm
 
 
-def generate_roadmap(goal: str) -> str:
+def generate_roadmap(
+    selected_career: str,
+    matched_skills: list,
+    missing_skills: list
+) -> str:
     """
-    Generate a concise learning roadmap for a career goal.
+    Generate a personalized learning roadmap.
     """
 
     print("ROADMAP TOOL CALLED")
 
     prompt = f"""
-You are an expert career mentor.
+You are an expert Career Mentor.
 
-Create a concise learning roadmap for becoming a {goal}.
+The learner wants to become:
 
-Include ONLY:
+{selected_career}
 
-1. Prerequisites
-2. Beginner Phase
-3. Intermediate Phase
-4. Advanced Phase
-5. Estimated Timeline
+Current Skills:
+
+{', '.join(matched_skills)}
+
+Skills to Learn:
+
+{', '.join(missing_skills)}
+
+IMPORTANT INSTRUCTIONS:
+
+- The learner already knows the current skills.
+- DO NOT include topics that are already known.
+- Focus ONLY on the missing skills.
+- Arrange the learning path from beginner to advanced.
+- Make it industry-oriented.
+
+Generate the roadmap with the following sections:
+
+# Prerequisites
+
+# Beginner Phase
+
+# Intermediate Phase
+
+# Advanced Phase
+
+# Timeline
 
 Rules:
 
 - Maximum 5 bullet points per section.
-- Keep explanations short.
-- Use Markdown headings.
-- Do not add unnecessary details.
+- Keep explanations concise.
+- Use Markdown.
+- Avoid unnecessary theory.
+- Prioritize practical learning.
 """
 
     response = llm.invoke(prompt)

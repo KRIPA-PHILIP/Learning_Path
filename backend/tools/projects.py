@@ -1,40 +1,63 @@
 from llm import llm
 
 
-def suggest_projects(goal: str, roadmap: str) -> str:
+def suggest_projects(
+    selected_career: str,
+    missing_skills: list,
+    roadmap: str
+) -> str:
     """
-    Suggest portfolio projects based on the roadmap.
+    Suggest personalized portfolio projects based on the
+    learner's missing skills and roadmap.
     """
 
     print("PROJECTS TOOL CALLED")
 
     prompt = f"""
-You are an expert software mentor.
+You are an expert software engineering mentor.
 
-Career Goal:
+The learner wants to become:
 
-{goal}
+{selected_career}
+
+The learner wants to become:
+
+{selected_career}
+
+Missing Skills:
+
+{', '.join(missing_skills)}
 
 Learning Roadmap:
 
 {roadmap}
 
-Suggest:
+Design portfolio projects that help the learner master the missing skills.
 
-## Beginner Projects
-- 3 Projects
+Generate:
 
-## Intermediate Projects
-- 3 Projects
+# Beginner Projects
+- 3 projects
 
-## Advanced Projects
-- 2 Projects
+# Intermediate Projects
+- 3 projects
+
+# Advanced Projects
+- 2 projects
+
+For every project include:
+
+- Project Name
+- Technologies Used
+- Skills Covered
+- One-line Description
 
 Rules:
 
-- Mention technologies.
-- One line explanation.
-- Return Markdown.
+- Projects must progressively increase in difficulty.
+- Focus on industry-relevant projects.
+- Every project should help improve one or more missing skills.
+- Return in Markdown format.
 """
 
     response = llm.invoke(prompt)

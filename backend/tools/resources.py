@@ -1,9 +1,14 @@
 from llm import llm
 
 
-def recommend_resources(goal: str, roadmap: str) -> str:
+def recommend_resources(
+    selected_career: str,
+    missing_skills: list,
+    roadmap: str
+) -> str:
     """
-    Recommend learning resources based on the roadmap.
+    Recommend personalized learning resources based on
+    the learner's missing skills and roadmap.
     """
 
     print("RESOURCES TOOL CALLED")
@@ -11,33 +16,45 @@ def recommend_resources(goal: str, roadmap: str) -> str:
     prompt = f"""
 You are an expert technical mentor.
 
-Career Goal:
+The learner wants to become:
 
-{goal}
+{selected_career}
+
+Skills the learner already has are NOT to be recommended again.
+
+Missing Skills:
+
+{', '.join(missing_skills)}
 
 Learning Roadmap:
 
 {roadmap}
 
-Recommend ONLY:
+Recommend learning resources ONLY for the missing skills.
 
-## Documentation
+Provide:
+
+# Official Documentation
 - 3 official documentation websites
 
-## YouTube
-- 3 YouTube channels
+# YouTube Channels
+- 3 high-quality YouTube channels
 
-## Courses
-- 2 online courses
+# Online Courses
+- 2 recommended online courses
 
-## Books
+# Books
 - 2 recommended books
+
+# Practice Platforms
+- 3 websites for hands-on practice
 
 Rules:
 
-- One line description only.
-- Avoid long explanations.
-- Return in Markdown.
+- Recommend only trusted resources.
+- Avoid duplicate recommendations.
+- Keep descriptions to one line.
+- Return in Markdown format.
 """
 
     response = llm.invoke(prompt)

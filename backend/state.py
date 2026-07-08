@@ -2,8 +2,16 @@ from typing import TypedDict
 
 
 class LearningPathState(TypedDict):
-    goal: str
 
+    # Career Information
+    selected_career: str
+
+    # Skill Gap
+    matched_skills: list[str]
+
+    missing_skills: list[str]
+
+    # LangGraph Nodes
     roadmap: str
 
     resources: str
@@ -12,4 +20,5 @@ class LearningPathState(TypedDict):
 
     planner: str
 
+    # Final Response
     final_response: str

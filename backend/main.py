@@ -1,7 +1,11 @@
+from unittest import result
+
 from fastapi import UploadFile, File
 import shutil
 import os
 import uuid
+
+from httpcore import request
 
 from tools.resume_analysis import analyze_resume
 from tools.career_recommendation import recommend_careers
@@ -62,62 +66,6 @@ def home():
     return {
         "message": "Learning Path Agent API Running"
     }
-
-
-# ==========================================================
-# Generate Learning Path
-# ==========================================================
-
-@app.post("/generate-learning-path")
-def generate_learning_path(request: GoalRequest):
-
-    try:
-
-        print("\n" + "=" * 70)
-        print("LANGGRAPH EXECUTION STARTED")
-        print("Session :", request.session_id)
-        print("Goal    :", request.goal)
-        print("=" * 70)
-
-        result = graph.invoke(
-            {
-                "goal": request.goal,
-                "roadmap": "",
-                "resources": "",
-                "projects": "",
-                "planner": "",
-                "final_response": ""
-            }
-        )
-
-        # Save learning path
-        memory.save_learning_path(
-            request.session_id,
-            result["final_response"]
-        )
-
-        print("=" * 70)
-        print("LEARNING PATH SAVED")
-        print("Session :", request.session_id)
-        print("=" * 70)
-
-        print("=" * 70)
-        print("LANGGRAPH EXECUTION COMPLETED")
-        print("=" * 70)
-
-        return {
-            "session_id": request.session_id,
-            "goal": request.goal,
-            "learning_path": result["final_response"]
-        }
-
-    except Exception as e:
-
-        print("ERROR:", e)
-
-        return {
-            "error": str(e)
-        }
 
 
 # ==========================================================
@@ -250,10 +198,22 @@ Instructions:
             "error": str(e)
         }
 @app.post("/upload-resume")
-async def upload_resume(file: UploadFile = File(...), session_id: str = None):
+async def upload_resume(file: UploadFile = File(...)):
 
     try:
+        # --------------------------------------------------
+        # Validate File Type
+        # --------------------------------------------------
 
+        if not file.filename.lower().endswith(".pdf"):
+
+            return {
+
+        "success": False,
+
+        "message": "Only PDF resumes are supported."
+
+    }
         # --------------------------------------------------
         # Create Upload Folder
         # --------------------------------------------------
@@ -270,7 +230,19 @@ async def upload_resume(file: UploadFile = File(...), session_id: str = None):
         # --------------------------------------------------
 
         resume_text = extract_resume_text(file_path)
+        # --------------------------------------------------
+        # Validate Extracted Text
+        # --------------------------------------------------
 
+        if not resume_text.strip(): 
+
+            return {
+
+        "success": False,
+
+        "message": "No readable text found in the uploaded PDF."
+
+    }
         # --------------------------------------------------
         # Validate Resume
         # --------------------------------------------------
@@ -289,16 +261,28 @@ async def upload_resume(file: UploadFile = File(...), session_id: str = None):
         # --------------------------------------------------
 
         profile = analyze_resume(resume_text)
+        careers = recommend_careers(profile)
+        session_id = str(uuid.uuid4())
+        memory.save_resume(
+            session_id,
+            resume_text
+    )
 
-        if session_id:
-            memory.save_resume(session_id, resume_text)
-            memory.save_candidate_profile(session_id, profile)
+        memory.save_candidate_profile(
+            session_id,
+            profile
+)
 
+        memory.save_recommended_careers(
+            session_id,
+            careers
+)
         return {
             "success": True,
             "is_resume": True,
             "message": "Resume uploaded and analyzed successfully.",
-            "profile": profile,
+            "session_id": session_id,
+            "recommended_careers": careers,
         }
 
     except Exception as e:
@@ -341,7 +325,7 @@ def select_career(request: CareerSelectionRequest):
         )
 
         # --------------------------------------------------
-        # Find the Selected Career
+        # Find Selected Career
         # --------------------------------------------------
 
         selected_career = None
@@ -349,9 +333,7 @@ def select_career(request: CareerSelectionRequest):
         for career in careers["recommended_careers"]:
 
             if career["title"] == request.career:
-
                 selected_career = career
-
                 break
 
         if selected_career is None:
@@ -365,11 +347,8 @@ def select_career(request: CareerSelectionRequest):
         # --------------------------------------------------
 
         skill_gap = generate_skill_gap(
-
             profile["skills"],
-
             selected_career["required_skills"]
-
         )
 
         # --------------------------------------------------
@@ -377,11 +356,34 @@ def select_career(request: CareerSelectionRequest):
         # --------------------------------------------------
 
         memory.save_skill_gap(
-
             request.session_id,
-
             skill_gap
+        )
 
+        # --------------------------------------------------
+        # Generate Personalized Learning Path
+        # --------------------------------------------------
+
+        result = graph.invoke(
+            {
+                "selected_career": request.career,
+                "matched_skills": skill_gap["matched_skills"],
+                "missing_skills": skill_gap["missing_skills"],
+                "roadmap": "",
+                "resources": "",
+                "projects": "",
+                "planner": "",
+                "final_response": ""
+            }
+        )
+
+        # --------------------------------------------------
+        # Save Learning Path
+        # --------------------------------------------------
+
+        memory.save_learning_path(
+            request.session_id,
+            result["final_response"]
         )
 
         # --------------------------------------------------
@@ -398,7 +400,9 @@ def select_career(request: CareerSelectionRequest):
 
             "matched_skills": skill_gap["matched_skills"],
 
-            "missing_skills": skill_gap["missing_skills"]
+            "missing_skills": skill_gap["missing_skills"],
+
+            "learning_path": result["final_response"]
 
         }
 

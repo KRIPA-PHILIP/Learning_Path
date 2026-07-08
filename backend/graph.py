@@ -17,8 +17,10 @@ def roadmap_node(state: LearningPathState):
     print("ROADMAP NODE")
 
     roadmap = generate_roadmap(
-        state["goal"]
-    )
+    state["selected_career"],
+    state["matched_skills"],
+    state["missing_skills"]
+)
 
     return {
         "roadmap": roadmap
@@ -34,9 +36,10 @@ def resources_node(state: LearningPathState):
     print("RESOURCES NODE")
 
     resources = recommend_resources(
-        state["goal"],
-        state["roadmap"]
-    )
+    state["selected_career"],
+    state["missing_skills"],
+    state["roadmap"]
+)
 
     return {
         "resources": resources
@@ -52,9 +55,10 @@ def projects_node(state: LearningPathState):
     print("PROJECTS NODE")
 
     projects = suggest_projects(
-        state["goal"],
-        state["roadmap"]
-    )
+    state["selected_career"],
+    state["missing_skills"],
+    state["roadmap"]
+)
 
     return {
         "projects": projects
@@ -70,10 +74,13 @@ def planner_node(state: LearningPathState):
     print("PLANNER NODE")
 
     planner = create_daily_plan(
-        state["goal"],
-        state["roadmap"],
-        state["projects"]
-    )
+    state["selected_career"],
+    state["missing_skills"],
+    state["roadmap"],
+    state["projects"]
+) 
+    state["projects"]
+    
 
     return {
         "planner": planner
@@ -89,10 +96,21 @@ def combine_node(state: LearningPathState):
     print("COMBINING RESPONSE")
 
     final_response = f"""
-# Learning Path for {state['goal']}
+# Personalized Learning Path
+
+Career: {state['selected_career']}
+---
+## Current Skills
+
+{", ".join(state["matched_skills"])}
 
 ---
 
+## Skills To Learn
+
+{", ".join(state["missing_skills"])}
+
+---
 ## Learning Roadmap
 
 {state['roadmap']}

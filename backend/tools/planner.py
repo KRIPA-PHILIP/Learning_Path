@@ -1,21 +1,30 @@
 from llm import llm
 
 
-def create_daily_plan(goal: str, roadmap: str, projects: str) -> str:
+def create_daily_plan(
+    selected_career: str,
+    missing_skills: list,
+    roadmap: str,
+    projects: str
+) -> str:
     """
-    Create a study planner based on roadmap and projects.
+    Generate a personalized weekly study plan.
     """
 
     print("PLANNER TOOL CALLED")
 
     prompt = f"""
-You are an expert study planner.
+You are an expert Career Coach and Study Planner.
 
-Career Goal:
+The learner wants to become:
 
-{goal}
+{selected_career}
 
-Roadmap:
+Missing Skills:
+
+{', '.join(missing_skills)}
+
+Learning Roadmap:
 
 {roadmap}
 
@@ -23,20 +32,38 @@ Projects:
 
 {projects}
 
-Create:
+Create a practical weekly learning schedule.
 
-## Weekly Plan
+Include:
 
-## Daily Schedule
+# Weekly Plan
 
-## Revision Strategy
+- Week 1
+- Week 2
+- Week 3
+- Week 4
 
-## Practice Tips
+For each week mention:
+
+- Topics to Learn
+- Hands-on Practice
+- Project Work
+- Revision
+
+Finally include:
+
+# Daily Study Schedule
+
+# Revision Strategy
+
+# Practice Tips
 
 Rules:
 
-- Keep it concise.
-- Use Markdown.
+- Prioritize the missing skills.
+- Balance theory and practical work.
+- Keep the schedule realistic.
+- Use Markdown formatting.
 """
 
     response = llm.invoke(prompt)
