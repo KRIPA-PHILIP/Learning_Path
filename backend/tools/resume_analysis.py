@@ -1,4 +1,10 @@
-prompt = f"""
+import json
+from llm import llm
+
+
+def analyze_resume(resume_text: str):
+
+    prompt = f"""
 You are an expert Resume Analyzer.
 
 The text below was extracted from a PDF uploaded by the user.
@@ -33,3 +39,21 @@ Resume Text
 
 ====================================
 """
+
+    response = llm.invoke(prompt)
+
+    content = response.content.strip()
+
+    if content.startswith("```"):
+        lines = content.splitlines()
+        content = "\n".join(lines[1:-1])
+
+    try:
+        return json.loads(content)
+
+    except json.JSONDecodeError:
+        return {
+            "success": False,
+            "error": "Invalid JSON returned by LLM.",
+            "raw_output": content
+        }

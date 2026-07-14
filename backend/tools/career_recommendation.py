@@ -52,7 +52,9 @@ Candidate Profile:
     response = llm.invoke(prompt)
 
     content = response.content.strip()
-
+    print("\n========== RAW LLM OUTPUT ==========\n")
+    print(repr(content))
+    print("\n====================================\n")
     # Remove markdown if present
     if content.startswith("```"):
         lines = content.splitlines()

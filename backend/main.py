@@ -16,7 +16,7 @@ from resume.extractor import extract_resume_text
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
+from tools.guardrails import check_prompt_injection
 from graph import graph
 from agent import agent
 
@@ -230,6 +230,21 @@ async def upload_resume(file: UploadFile = File(...)):
         # --------------------------------------------------
 
         resume_text = extract_resume_text(file_path)
+        # --------------------------------------------------
+        # Prompt Injection Guard
+        # --------------------------------------------------
+
+        guard = check_prompt_injection(resume_text)
+
+        if not guard["safe"]:
+
+         return {
+
+        "success": False,
+
+        "message": guard["reason"]
+
+    }
         # --------------------------------------------------
         # Validate Extracted Text
         # --------------------------------------------------
